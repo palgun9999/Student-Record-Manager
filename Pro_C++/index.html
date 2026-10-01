@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya University - B.Tech College Management System (AIML)</title>
+    <style>
+        :root {
+            --bg-body: #080c17;
+            --bg-card: #111827;
+            --bg-card-hover: #1f2937;
+            --bg-input: #1e293b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f97316;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1f293d;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* University Header */
+        .uni-navbar {
+            background: linear-gradient(90deg, #091024 0%, #172554 50%, #0b1329 100%);
+            border-bottom: 2px solid #3b82f6;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .uni-brand { display: flex; align-items: center; gap: 14px; }
+        .uni-logo-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.25rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .uni-title-group h1 { font-size: 1.32rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+        .uni-title-group p { font-size: 0.82rem; color: #93c5fd; font-weight: 500; }
+
+        .user-auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+        }
+
+        .pulse-online { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; }
+
+        /* Tabs Nav */
+        .tabs-nav {
+            background: #0b1122;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 4px;
+            padding: 0 28px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 14px 20px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .tab-btn.active { color: #60a5fa; border-bottom-color: #3b82f6; background: rgba(59,130,246,0.08); }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1340px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.25s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-title { font-size: 1.18rem; font-weight: 700; color: #fff; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-box .label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+        .stat-box .val { font-size: 1.8rem; font-weight: 800; color: #fff; }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search-field {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: #fff;
+            width: 100%;
+            max-width: 380px;
+            outline: none;
+        }
+        .search-field:focus { border-color: var(--primary); }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #334155; }
+        .btn-secondary:hover { background: #475569; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-warning { background: var(--accent); color: #000; font-weight: 700; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        .table-responsive {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow-x: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #0c1426; color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        td { padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .badge-reg { background: #1e293b; color: #38bdf8; font-family: monospace; font-weight: 700; padding: 4px 8px; border-radius: 6px; border: 1px solid #334155; }
+        .badge-tag { padding: 3px 8px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; }
+        .tag-green { background: rgba(16,185,129,0.18); color: #34d399; }
+        .tag-amber { background: rgba(245,158,11,0.18); color: #fbbf24; }
+        .tag-red { background: rgba(239,68,68,0.18); color: #f87171; }
+        .tag-blue { background: rgba(59,130,246,0.18); color: #60a5fa; }
+
+        /* Modals */
+        .modal-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.82); display: none;
+            justify-content: center; align-items: flex-start;
+            z-index: 9999; backdrop-filter: blur(6px);
+            overflow-y: auto; padding: 36px 16px;
+        }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+            width: 100%; max-width: 600px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+            margin: auto; position: relative;
+            display: flex; flex-direction: column;
+            max-height: calc(100vh - 72px);
+        }
+        .modal-head {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 14px; margin-bottom: 16px;
+            border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .modal-head h2 { font-size: 1.28rem; color: #fff; }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.6rem; cursor: pointer; }
+        .close-btn:hover { color: #fff; }
+        .modal-form-body {
+            overflow-y: auto; max-height: calc(100vh - 220px);
+            padding-right: 8px; margin-bottom: 12px;
+        }
+        .form-row { margin-bottom: 14px; }
+        .form-row label { display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; }
+        .input-ctrl { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.92rem; outline: none; }
+        .input-ctrl:focus { border-color: var(--primary); }
+        .modal-foot {
+            display: flex; justify-content: flex-end; gap: 12px;
+            padding-top: 14px; border-top: 1px solid var(--border);
+            flex-shrink: 0; background: var(--bg-card);
+        }
+
+        #toast {
+            position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 8px;
+            background: #1e293b; color: white; border: 1px solid var(--border); z-index: 2000;
+            opacity: 0; transform: translateY(10px); transition: all 0.3s;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+        #toast.success { border-color: var(--success); }
+        #toast.error { border-color: var(--danger); }
+
+        footer {
+            background: #090e1b;
+            border-top: 1px solid var(--border);
+            padding: 18px 28px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- University Header -->
+    <header class="uni-navbar">
+        <div class="uni-brand">
+            <div class="uni-logo-badge">ADITYA</div>
+            <div class="uni-title-group">
+                <h1>ADITYA UNIVERSITY &bull; COLLEGE OF ENGINEERING</h1>
+                <p>B.Tech College Management System &bull; Dept of Artificial Intelligence &amp; Machine Learning (AIML)</p>
+            </div>
+        </div>
+        <div class="user-auth-badge">
+            <span class="pulse-online"></span>
+            <span id="activeUserLabel">HOD / Dean (Full Control)</span>
+            <button class="btn btn-secondary btn-sm" onclick="promptLogin()">Switch Role</button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('students')">🎓 Student Records</button>
+        <button class="tab-btn" onclick="switchTab('academics')">📊 Academic Marksheets (SGPA)</button>
+        <button class="tab-btn" onclick="switchTab('attendance')">📅 Attendance &amp; Condonation</button>
+        <button class="tab-btn" onclick="switchTab('fees')">💳 College Fee Ledger</button>
+        <button class="tab-btn" onclick="switchTab('reports')">🏆 Department Merit &amp; Toppers</button>
+        <button class="tab-btn" onclick="switchTab('admin')">🔐 Faculty &amp; Access</button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- 1. STUDENTS MODULE -->
+        <section id="pane-students" class="tab-pane active">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="label">Total B.Tech Students</span>
+                    <span class="val" id="statStudentCount">7</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">Department &amp; Sem</span>
+                    <span class="val" style="font-size: 1.35rem; color: #60a5fa;">AIML &bull; Sem 2</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">Batch Attendance</span>
+                    <span class="val" id="statAvgAtt">83.3%</span>
+                </div>
+                <div class="stat-box">
+                    <span class="label">Average Batch SGPA</span>
+                    <span class="val" id="statAvgSGPA" style="color: #34d399;">8.42</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">B.Tech Student Directory (AIML Department)</h2>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Undergraduate Engineering Batch 2025–2029</p>
+                    </div>
+                    <div class="toolbar" style="margin: 0;">
+                        <input type="text" id="studentSearch" class="search-field" placeholder="Search by Reg No, Name, Location..." oninput="filterStudents()">
+                        <button class="btn btn-secondary" onclick="resetData()">Reset Demo Data</button>
+                        <button class="btn" onclick="openAddStudentModal()">+ Register Student</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Registration No</th>
+                                <th>Student Name</th>
+                                <th>DOB</th>
+                                <th>Contact</th>
+                                <th>Home Town</th>
+                                <th>Program &amp; Sem</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ACADEMIC RECORDS MODULE -->
+        <section id="pane-academics" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">B.Tech Semester Marksheets &amp; SGPA (10.0 Scale)</h2>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Courses: OOP with C++, DSA, AIML Foundations, Discrete Maths, Digital Logic</p>
+                    </div>
+                    <button class="btn" onclick="openAddMarksModal()">+ Enter Course Marks</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>Student Name</th>
+                                <th>Course Performance</th>
+                                <th>Total (/500)</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                                <th>SGPA</th>
+                                <th>Official Marksheet</th>
+                            </tr>
+                        </thead>
+                        <tbody id="academicsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. ATTENDANCE MANAGER MODULE -->
+        <section id="pane-attendance" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Attendance Tracking &amp; Semester Exam Clearance</h2>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">University Rule: &ge;75% Normal Clearance | 65%–74.9% Condonation | &lt;65% Detained</p>
+                    </div>
+                    <button class="btn" onclick="openMarkAttendanceModal()">+ Mark Lecture Attendance</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>Student Name</th>
+                                <th>Total Lectures</th>
+                                <th>Attended</th>
+                                <th>Attendance %</th>
+                                <th>Clearance Status</th>
+                                <th>Quick Mark</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. FEE MANAGER MODULE -->
+        <section id="pane-fees" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">B.Tech Semester Tuition &amp; Laboratory Fee Ledger</h2>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Aditya University Standard Semester Fee: ₹55,000</p>
+                    </div>
+                    <button class="btn" onclick="openRecordPaymentModal()">+ Record Fee Payment</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>Student Name</th>
+                                <th>Semester Fee</th>
+                                <th>Paid Amount</th>
+                                <th>Outstanding Balance</th>
+                                <th>Ledger Status</th>
+                                <th>College Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. REPORT GENERATOR MODULE -->
+        <section id="pane-reports" class="tab-pane">
+            <div class="card" style="background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%); border-color: #f59e0b;">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title" style="color: #f59e0b; font-size: 1.35rem;">🏆 Department Merit Ranking &amp; Dean's Honor Roll</h2>
+                        <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 4px;">Department of AIML &bull; B.Tech Semester 2 Merit Evaluation</p>
+                    </div>
+                    <button class="btn btn-warning" onclick="downloadCsvReport()">📥 Export btech_aiml_sem2_report.csv</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Reg No</th>
+                                <th>Student Name</th>
+                                <th>Percentage</th>
+                                <th>SGPA</th>
+                                <th>Attendance %</th>
+                                <th>Overall Grade</th>
+                                <th>University Distinction / Honor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. ADMIN & FACULTY MODULE -->
+        <section id="pane-admin" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Faculty Access &amp; Department Administration</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Faculty ID / Username</th>
+                                <th>Designation / Role</th>
+                                <th>Current Status</th>
+                                <th>Switch Mode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>admin</strong></td>
+                                <td><span class="badge-tag tag-green">HOD / Dean (AIML)</span></td>
+                                <td>Active Session (Full Control)</td>
+                                <td><span class="badge-tag tag-green">Current</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>faculty</strong></td>
+                                <td><span class="badge-tag tag-amber">Assistant Professor</span></td>
+                                <td>Available</td>
+                                <td><button class="btn btn-secondary btn-sm" onclick="switchUserRole('faculty', 'Assistant Professor')">Switch</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>aiml_coord</strong></td>
+                                <td><span class="badge-tag tag-blue">Course Coordinator</span></td>
+                                <td>Available</td>
+                                <td><button class="btn btn-secondary btn-sm" onclick="switchUserRole('aiml_coord', 'Course Coordinator')">Switch</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Project Team Details -->
+            <div class="card" style="border-left: 4px solid #2563eb;">
+                <h3 style="color: #60a5fa; margin-bottom: 12px;">👥 Aditya University B.Tech Project Team (AIML)</h3>
+                <p style="margin-bottom: 6px; font-size: 0.9rem;"><strong>Project Guide:</strong> K. Syamala Kalyani, M.Tech (Assistant Professor, AIML)</p>
+                <ul style="list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; font-size: 0.88rem;">
+                    <li style="background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);"><strong>25B11AI241</strong> — D.R. Palgun (Main C++ Engine)</li>
+                    <li style="background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);"><strong>25B11AI581</strong> — K. Bala Aditya (Testing &amp; Debugging)</li>
+                    <li style="background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);"><strong>25B11AI361</strong> — G. Dileep (OOP Structure &amp; Design)</li>
+                    <li style="background: rgba(255,255,255,0.02); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border);"><strong>25B11AI765</strong> — M. Mohith Naik (Documentation &amp; Workflow)</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals -->
+    <!-- Student Registration Modal -->
+    <div id="studentModal" class="modal-bg">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2 id="studentModalTitle">Register B.Tech Student</h2>
+                <button class="close-btn" onclick="closeModal('studentModal')">&times;</button>
+            </div>
+            <form onsubmit="submitStudentForm(event)">
+                <input type="hidden" id="editMode" value="false">
+                <div class="modal-form-body">
+                    <div class="form-row">
+                        <label>University Registration / Roll No *</label>
+                        <input type="text" id="mRollNo" class="input-ctrl" required placeholder="e.g. 25B11AI241">
+                    </div>
+                    <div class="form-row">
+                        <label>Student Full Name *</label>
+                        <input type="text" id="mName" class="input-ctrl" required placeholder="e.g. D.R. Palgun">
+                    </div>
+                    <div class="form-row">
+                        <label>Date of Birth (DD-MM-YYYY)</label>
+                        <input type="text" id="mDOB" class="input-ctrl" placeholder="12-05-2006">
+                    </div>
+                    <div class="form-row">
+                        <label>Contact Phone</label>
+                        <input type="text" id="mContact" class="input-ctrl" placeholder="9876543210">
+                    </div>
+                    <div class="form-row">
+                        <label>Address / Home Town</label>
+                        <input type="text" id="mAddress" class="input-ctrl" placeholder="Surampalem, AP">
+                    </div>
+                    <div class="form-row">
+                        <label>Program &amp; Semester</label>
+                        <input type="text" id="mClass" class="input-ctrl" value="B.Tech AIML - Sem 2">
+                    </div>
+                </div>
+                <div class="modal-foot">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('studentModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Student Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Attendance Modal -->
+    <div id="attendanceModal" class="modal-bg">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2>Mark Lecture Attendance</h2>
+                <button class="close-btn" onclick="closeModal('attendanceModal')">&times;</button>
+            </div>
+            <form onsubmit="submitAttendanceForm(event)">
+                <div class="modal-form-body">
+                    <div class="form-row">
+                        <label>Student Registration No</label>
+                        <input type="text" id="attRollNo" class="input-ctrl" required placeholder="e.g. 25B11AI241">
+                    </div>
+                    <div class="form-row">
+                        <label>Lecture Date (DD-MM-YYYY)</label>
+                        <input type="text" id="attDate" class="input-ctrl" value="18-09-2026">
+                    </div>
+                    <div class="form-row">
+                        <label>Attendance Status</label>
+                        <select id="attStatus" class="input-ctrl">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-foot">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('attendanceModal')">Cancel</button>
+                    <button type="submit" class="btn">Log Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fee Payment Modal -->
+    <div id="feeModal" class="modal-bg">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2>Record Semester Fee Payment</h2>
+                <button class="close-btn" onclick="closeModal('feeModal')">&times;</button>
+            </div>
+            <form onsubmit="submitFeeForm(event)">
+                <div class="modal-form-body">
+                    <div class="form-row">
+                        <label>Student Registration No</label>
+                        <input type="text" id="feeRollNo" class="input-ctrl" required placeholder="e.g. 25B11AI241">
+                    </div>
+                    <div class="form-row">
+                        <label>Amount Paid (₹)</label>
+                        <input type="number" id="feeAmount" class="input-ctrl" required min="1000" max="55000" placeholder="25000">
+                    </div>
+                    <div class="form-row">
+                        <label>Payment Date</label>
+                        <input type="text" id="feeDate" class="input-ctrl" value="18-09-2026">
+                    </div>
+                </div>
+                <div class="modal-foot">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('feeModal')">Cancel</button>
+                    <button type="submit" class="btn">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Marks Entry Modal -->
+    <div id="marksModal" class="modal-bg">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h2>Enter Course Marks (B.Tech AIML)</h2>
+                <button class="close-btn" onclick="closeModal('marksModal')">&times;</button>
+            </div>
+            <form onsubmit="submitMarksForm(event)">
+                <div class="modal-form-body">
+                    <div class="form-row">
+                        <label>Registration No *</label>
+                        <input type="text" id="mksRollNo" class="input-ctrl" required placeholder="e.g. 25B11AI241">
+                    </div>
+                    <div class="form-row">
+                        <label>OOP with C++ (0 - 100)</label>
+                        <input type="number" id="mksOOP" class="input-ctrl" min="0" max="100" placeholder="95">
+                    </div>
+                    <div class="form-row">
+                        <label>Data Structures &amp; Algorithms (0 - 100)</label>
+                        <input type="number" id="mksDSA" class="input-ctrl" min="0" max="100" placeholder="92">
+                    </div>
+                    <div class="form-row">
+                        <label>AI &amp; Machine Learning Foundations (0 - 100)</label>
+                        <input type="number" id="mksAIML" class="input-ctrl" min="0" max="100" placeholder="94">
+                    </div>
+                    <div class="form-row">
+                        <label>Discrete Mathematical Structures (0 - 100)</label>
+                        <input type="number" id="mksDMS" class="input-ctrl" min="0" max="100" placeholder="88">
+                    </div>
+                    <div class="form-row">
+                        <label>Digital Logic &amp; Computer Org (0 - 100)</label>
+                        <input type="number" id="mksDLCO" class="input-ctrl" min="0" max="100" placeholder="90">
+                    </div>
+                </div>
+                <div class="modal-foot">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('marksModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Marksheet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Printable Dossier / Receipt Modal -->
+    <div id="dossierModal" class="modal-bg">
+        <div class="modal-box" style="max-width: 680px;">
+            <div class="modal-head">
+                <h2 id="dossierTitle">Academic Document</h2>
+                <button class="close-btn" onclick="closeModal('dossierModal')">&times;</button>
+            </div>
+            <pre id="dossierContent" style="background:#090d16; padding:18px; border-radius:8px; border:1px solid var(--border); font-family:monospace; color:#38bdf8; white-space:pre-wrap; font-size:0.86rem; line-height: 1.55;"></pre>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Document</button>
+                <button class="btn" onclick="closeModal('dossierModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <footer>
+        <p><strong>Aditya University &bull; College of Engineering</strong> | Department of Artificial Intelligence &amp; Machine Learning</p>
+        <p>B.Tech College Management System &bull; C++17 Core Engine &bull; Interactive Web Portal</p>
+    </footer>
+
+    <script>
+        const defaultStudents = [
+            { rollNo: "25B11AI241", name: "D.R. Palgun", dob: "12-05-2006", contact: "9876543210", address: "Surampalem, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI581", name: "K. Bala Aditya", dob: "15-08-2006", contact: "9876543211", address: "Kakinada, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI361", name: "G. Dileep", dob: "22-01-2006", contact: "9876543212", address: "Rajahmundry, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI765", name: "M. Mohith Naik", dob: "10-11-2006", contact: "9876543213", address: "Visakhapatnam, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI130", name: "B. Vyas Sri Nandan", dob: "11-07-2007", contact: "9875842487", address: "Draksharamam, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI101", name: "Ravi Kumar", dob: "12-05-2006", contact: "9876543214", address: "Bobbili, AP", className: "B.Tech AIML - Sem 2" },
+            { rollNo: "25B11AI102", name: "Priya Sharma", dob: "15-08-2006", contact: "9876543215", address: "Vijayawada, AP", className: "B.Tech AIML - Sem 2" }
+        ];
+
+        const defaultAcademics = [
+            { rollNo: "25B11AI102", studentName: "Priya Sharma", subjects: { "OOP_CPP": 95, "DSA": 92, "AIML_Foundations": 96, "Discrete_Maths": 90, "Digital_Logic": 94 }, totalMarks: 467, percentage: 93.40, grade: "O", cgpa: 9.60 },
+            { rollNo: "25B11AI241", studentName: "D.R. Palgun", subjects: { "OOP_CPP": 96, "DSA": 90, "AIML_Foundations": 92, "Discrete_Maths": 88, "Digital_Logic": 91 }, totalMarks: 457, percentage: 91.40, grade: "O", cgpa: 9.40 },
+            { rollNo: "25B11AI581", studentName: "K. Bala Aditya", subjects: { "OOP_CPP": 88, "DSA": 85, "AIML_Foundations": 89, "Discrete_Maths": 82, "Digital_Logic": 86 }, totalMarks: 430, percentage: 86.00, grade: "A+", cgpa: 8.80 },
+            { rollNo: "25B11AI361", studentName: "G. Dileep", subjects: { "OOP_CPP": 84, "DSA": 82, "AIML_Foundations": 85, "Discrete_Maths": 80, "Digital_Logic": 83 }, totalMarks: 414, percentage: 82.80, grade: "A+", cgpa: 8.40 },
+            { rollNo: "25B11AI765", studentName: "M. Mohith Naik", subjects: { "OOP_CPP": 82, "DSA": 80, "AIML_Foundations": 84, "Discrete_Maths": 78, "Digital_Logic": 81 }, totalMarks: 405, percentage: 81.00, grade: "A+", cgpa: 8.20 },
+            { rollNo: "25B11AI101", studentName: "Ravi Kumar", subjects: { "OOP_CPP": 80, "DSA": 78, "AIML_Foundations": 75, "Discrete_Maths": 72, "Digital_Logic": 76 }, totalMarks: 381, percentage: 76.20, grade: "A", cgpa: 7.80 },
+            { rollNo: "25B11AI130", studentName: "B. Vyas Sri Nandan", subjects: { "OOP_CPP": 75, "DSA": 72, "AIML_Foundations": 74, "Discrete_Maths": 68, "Digital_Logic": 70 }, totalMarks: 359, percentage: 71.80, grade: "A", cgpa: 7.20 }
+        ];
+
+        const defaultAttendance = [
+            { rollNo: "25B11AI102", studentName: "Priya Sharma", totalDays: 60, daysPresent: 58, percentage: 96.67 },
+            { rollNo: "25B11AI241", studentName: "D.R. Palgun", totalDays: 60, daysPresent: 56, percentage: 93.33 },
+            { rollNo: "25B11AI581", studentName: "K. Bala Aditya", totalDays: 60, daysPresent: 52, percentage: 86.67 },
+            { rollNo: "25B11AI361", studentName: "G. Dileep", totalDays: 60, daysPresent: 49, percentage: 81.67 },
+            { rollNo: "25B11AI765", studentName: "M. Mohith Naik", totalDays: 60, daysPresent: 46, percentage: 76.67 },
+            { rollNo: "25B11AI101", studentName: "Ravi Kumar", totalDays: 60, daysPresent: 42, percentage: 70.00 },
+            { rollNo: "25B11AI130", studentName: "B. Vyas Sri Nandan", totalDays: 60, daysPresent: 35, percentage: 58.33 }
+        ];
+
+        const defaultFees = [
+            { rollNo: "25B11AI241", name: "D.R. Palgun", standardFee: 55000, totalPaid: 55000, pendingBalance: 0 },
+            { rollNo: "25B11AI102", name: "Priya Sharma", standardFee: 55000, totalPaid: 55000, pendingBalance: 0 },
+            { rollNo: "25B11AI581", name: "K. Bala Aditya", standardFee: 55000, totalPaid: 35000, pendingBalance: 20000 },
+            { rollNo: "25B11AI361", name: "G. Dileep", standardFee: 55000, totalPaid: 30000, pendingBalance: 25000 },
+            { rollNo: "25B11AI765", name: "M. Mohith Naik", standardFee: 55000, totalPaid: 25000, pendingBalance: 30000 },
+            { rollNo: "25B11AI101", name: "Ravi Kumar", standardFee: 55000, totalPaid: 20000, pendingBalance: 35000 },
+            { rollNo: "25B11AI130", name: "B. Vyas Sri Nandan", standardFee: 55000, totalPaid: 15000, pendingBalance: 40000 }
+        ];
+
+        let state = {
+            students: JSON.parse(localStorage.getItem('btech_students')) || defaultStudents,
+            academics: JSON.parse(localStorage.getItem('btech_academics')) || defaultAcademics,
+            attendance: JSON.parse(localStorage.getItem('btech_attendance')) || defaultAttendance,
+            fees: JSON.parse(localStorage.getItem('btech_fees')) || defaultFees,
+            currentUser: "admin",
+            accessLevel: "HOD / Dean (AIML)"
+        };
+
+        function saveState() {
+            localStorage.setItem('btech_students', JSON.stringify(state.students));
+            localStorage.setItem('btech_academics', JSON.stringify(state.academics));
+            localStorage.setItem('btech_attendance', JSON.stringify(state.attendance));
+            localStorage.setItem('btech_fees', JSON.stringify(state.fees));
+            renderAll();
+        }
+
+        function resetData() {
+            state.students = [...defaultStudents];
+            state.academics = [...defaultAcademics];
+            state.attendance = [...defaultAttendance];
+            state.fees = [...defaultFees];
+            saveState();
+            showToast("B.Tech AIML Demo data refreshed.");
+        }
+
+        function switchTab(name) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const target = document.getElementById('pane-' + name);
+            if (target) target.classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.className = 'show ' + (isError ? 'error' : 'success');
+            setTimeout(() => t.className = '', 3200);
+        }
+
+        function renderAll() {
+            renderStudentsTable(state.students);
+            renderAcademicsTable();
+            renderAttendanceTable();
+            renderFeesTable();
+            renderReportsTable();
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('statStudentCount').innerText = state.students.length;
+            const validAtt = state.attendance.filter(a => a.totalDays > 0);
+            const avgAtt = validAtt.length ? (validAtt.reduce((acc, c) => acc + c.percentage, 0) / validAtt.length).toFixed(1) + "%" : "N/A";
+            document.getElementById('statAvgAtt').innerText = avgAtt;
+
+            const validAcd = state.academics.filter(a => a.cgpa > 0);
+            const avgSGPA = validAcd.length ? (validAcd.reduce((acc, c) => acc + c.cgpa, 0) / validAcd.length).toFixed(2) : "N/A";
+            document.getElementById('statAvgSGPA').innerText = avgSGPA;
+        }
+
+        function renderStudentsTable(list) {
+            const tb = document.getElementById('studentsTableBody');
+            if (!list.length) {
+                tb.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No B.Tech student records found.</td></tr>`;
+                return;
+            }
+            tb.innerHTML = list.map(s => `
+                <tr>
+                    <td><span class="badge-reg">${escapeHtml(s.rollNo)}</span></td>
+                    <td><strong>${escapeHtml(s.name)}</strong></td>
+                    <td>${escapeHtml(s.dob || '-')}</td>
+                    <td>${escapeHtml(s.contact || '-')}</td>
+                    <td>${escapeHtml(s.address || '-')}</td>
+                    <td><span class="badge-tag tag-blue">${escapeHtml(s.className || 'B.Tech AIML - Sem 2')}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editStudent('${s.rollNo}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteStudent('${s.rollNo}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStudents() {
+            const q = document.getElementById('studentSearch').value.toLowerCase().trim();
+            if (!q) { renderStudentsTable(state.students); return; }
+            const filtered = state.students.filter(s =>
+                s.name.toLowerCase().includes(q) ||
+                s.rollNo.toLowerCase().includes(q) ||
+                s.address.toLowerCase().includes(q)
+            );
+            renderStudentsTable(filtered);
+        }
+
+        function renderAcademicsTable() {
+            const tb = document.getElementById('academicsTableBody');
+            tb.innerHTML = state.students.map(s => {
+                const rec = state.academics.find(a => a.rollNo === s.rollNo);
+                if (!rec) {
+                    return `<tr>
+                        <td><span class="badge-reg">${s.rollNo}</span></td>
+                        <td><strong>${escapeHtml(s.name)}</strong></td>
+                        <td colspan="5" style="color:var(--text-muted);">No courses evaluated</td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="quickAddMarks('${s.rollNo}')">+ Marks</button></td>
+                    </tr>`;
+                }
+                const subStr = Object.entries(rec.subjects).map(([k, v]) => `${k.replace('_', ' ')}: <b style="color:#60a5fa">${v}</b>`).join(' &bull; ');
+                let gradeBadge = 'tag-red';
+                if (rec.grade === 'O' || rec.grade === 'A+') gradeBadge = 'tag-green';
+                else if (rec.grade === 'A' || rec.grade === 'B+') gradeBadge = 'tag-amber';
+
+                return `<tr>
+                    <td><span class="badge-reg">${rec.rollNo}</span></td>
+                    <td><strong>${escapeHtml(s.name)}</strong></td>
+                    <td style="font-size:0.84rem;">${subStr}</td>
+                    <td><strong>${rec.totalMarks} / 500</strong></td>
+                    <td>${rec.percentage.toFixed(2)}%</td>
+                    <td><span class="badge-tag ${gradeBadge}">${rec.grade}</span></td>
+                    <td style="color:#34d399; font-weight:800; font-size:0.95rem;">${rec.cgpa.toFixed(2)}</td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="viewDossier('${s.rollNo}')">📄 Marksheet</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderAttendanceTable() {
+            const tb = document.getElementById('attendanceTableBody');
+            tb.innerHTML = state.students.map(s => {
+                let a = state.attendance.find(x => x.rollNo === s.rollNo);
+                if (!a) a = { rollNo: s.rollNo, studentName: s.name, totalDays: 0, daysPresent: 0, percentage: 0 };
+                let badge = 'tag-amber';
+                let label = 'No Record';
+                if (a.totalDays > 0) {
+                    if (a.percentage >= 75.0) { badge = 'tag-green'; label = '✅ Eligible (Normal)'; }
+                    else if (a.percentage >= 65.0) { badge = 'tag-amber'; label = '⚠️ Condonation Needed'; }
+                    else { badge = 'tag-red'; label = '🚫 Detained (<65%)'; }
+                }
+
+                return `<tr>
+                    <td><span class="badge-reg">${s.rollNo}</span></td>
+                    <td><strong>${escapeHtml(s.name)}</strong></td>
+                    <td>${a.totalDays} lectures</td>
+                    <td>${a.daysPresent} attended</td>
+                    <td><strong>${a.percentage.toFixed(2)}%</strong></td>
+                    <td><span class="badge-tag ${badge}">${label}</span></td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="quickMark('${s.rollNo}')">Mark Day</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderFeesTable() {
+            const tb = document.getElementById('feesTableBody');
+            tb.innerHTML = state.students.map(s => {
+                let f = state.fees.find(x => x.rollNo === s.rollNo);
+                if (!f) f = { rollNo: s.rollNo, name: s.name, standardFee: 55000, totalPaid: 0, pendingBalance: 55000 };
+                const isPaid = f.pendingBalance <= 0;
+                const badge = isPaid ? 'tag-green' : (f.totalPaid > 0 ? 'tag-amber' : 'tag-red');
+                const statusText = isPaid ? 'Paid in Full (No Dues)' : `₹${f.pendingBalance.toLocaleString()} Due`;
+                return `<tr>
+                    <td><span class="badge-reg">${s.rollNo}</span></td>
+                    <td><strong>${escapeHtml(s.name)}</strong></td>
+                    <td>₹${f.standardFee.toLocaleString()}</td>
+                    <td style="color:#34d399; font-weight:700;">₹${f.totalPaid.toLocaleString()}</td>
+                    <td style="color:${f.pendingBalance > 0 ? '#f87171' : '#34d399'}; font-weight:700;">₹${f.pendingBalance.toLocaleString()}</td>
+                    <td><span class="badge-tag ${badge}">${statusText}</span></td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="viewFeeReceipt('${s.rollNo}')">🧾 Receipt</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderReportsTable() {
+            const tb = document.getElementById('reportsTableBody');
+            const ranking = state.students
+                .map(s => {
+                    const ac = state.academics.find(a => a.rollNo === s.rollNo);
+                    const att = state.attendance.find(a => a.rollNo === s.rollNo);
+                    return {
+                        rollNo: s.rollNo,
+                        name: s.name,
+                        percentage: ac ? ac.percentage : 0,
+                        sgpa: ac ? ac.cgpa : 0,
+                        grade: ac ? ac.grade : 'N/A',
+                        attendance: att ? att.percentage : 0
+                    };
+                })
+                .sort((a, b) => b.percentage - a.percentage);
+
+            tb.innerHTML = ranking.map((r, idx) => {
+                let medal = `#${idx + 1}`;
+                let honor = 'Dean\'s Standing';
+                if (idx === 0 && r.percentage > 0) { medal = '🥇 1st Rank (Topper)'; honor = '🌟 Aditya Gold Medal (Branch Top)'; }
+                else if (idx === 1 && r.percentage > 0) { medal = '🥈 2nd Rank'; honor = '⭐ First Class with Distinction'; }
+                else if (idx === 2 && r.percentage > 0) { medal = '🥉 3rd Rank'; honor = 'First Class'; }
+
+                return `<tr>
+                    <td style="font-weight:700; color:#f59e0b;">${medal}</td>
+                    <td><span class="badge-reg">${r.rollNo}</span></td>
+                    <td><strong>${escapeHtml(r.name)}</strong></td>
+                    <td style="color:#60a5fa; font-weight:700;">${r.percentage.toFixed(2)}%</td>
+                    <td style="color:#34d399; font-weight:800;">${r.sgpa.toFixed(2)}</td>
+                    <td>${r.attendance.toFixed(2)}%</td>
+                    <td><span class="badge-tag tag-green">${r.grade}</span></td>
+                    <td><span class="badge-tag ${idx === 0 ? 'tag-amber' : 'tag-green'}">${honor}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Modal operations
+        function openAddStudentModal() {
+            document.getElementById('studentModalTitle').innerText = 'Register B.Tech Student';
+            document.getElementById('editMode').value = 'false';
+            document.getElementById('mRollNo').disabled = false;
+            document.getElementById('mRollNo').value = '';
+            document.getElementById('mName').value = '';
+            document.getElementById('mDOB').value = '';
+            document.getElementById('mContact').value = '';
+            document.getElementById('mAddress').value = '';
+            document.getElementById('mClass').value = 'B.Tech AIML - Sem 2';
+            openModal('studentModal');
+        }
+
+        function editStudent(rollNo) {
+            const s = state.students.find(x => x.rollNo === rollNo);
+            if (!s) return;
+            document.getElementById('studentModalTitle').innerText = 'Edit B.Tech Student #' + rollNo;
+            document.getElementById('editMode').value = 'true';
+            document.getElementById('mRollNo').disabled = true;
+            document.getElementById('mRollNo').value = s.rollNo;
+            document.getElementById('mName').value = s.name;
+            document.getElementById('mDOB').value = s.dob;
+            document.getElementById('mContact').value = s.contact;
+            document.getElementById('mAddress').value = s.address;
+            document.getElementById('mClass').value = s.className || 'B.Tech AIML - Sem 2';
+            openModal('studentModal');
+        }
+
+        function submitStudentForm(e) {
+            e.preventDefault();
+            const isEdit = document.getElementById('editMode').value === 'true';
+            const rollNo = document.getElementById('mRollNo').value.trim();
+            const name = document.getElementById('mName').value.trim();
+            const dob = document.getElementById('mDOB').value.trim();
+            const contact = document.getElementById('mContact').value.trim();
+            const address = document.getElementById('mAddress').value.trim();
+            const className = document.getElementById('mClass').value.trim() || 'B.Tech AIML - Sem 2';
+
+            if (isEdit) {
+                const s = state.students.find(x => x.rollNo === rollNo);
+                if (s) {
+                    s.name = name; s.dob = dob; s.contact = contact; s.address = address; s.className = className;
+                    showToast(`Updated B.Tech student #${rollNo}`);
+                }
+            } else {
+                if (state.students.some(x => x.rollNo === rollNo)) {
+                    showToast(`Student with Reg No #${rollNo} already registered!`, true);
+                    return;
+                }
+                state.students.push({ rollNo, name, dob, contact, address, className });
+                state.attendance.push({ rollNo, studentName: name, totalDays: 0, daysPresent: 0, percentage: 0 });
+                state.fees.push({ rollNo, name, standardFee: 55000, totalPaid: 0, pendingBalance: 55000 });
+                showToast(`Student ${name} registered in B.Tech AIML successfully!`);
+            }
+            closeModal('studentModal');
+            saveState();
+        }
+
+        function deleteStudent(rollNo) {
+            if (!confirm(`Are you sure you want to remove student with Reg No: ${rollNo}?`)) return;
+            state.students = state.students.filter(x => x.rollNo !== rollNo);
+            state.academics = state.academics.filter(x => x.rollNo !== rollNo);
+            state.attendance = state.attendance.filter(x => x.rollNo !== rollNo);
+            state.fees = state.fees.filter(x => x.rollNo !== rollNo);
+            saveState();
+            showToast(`Removed student #${rollNo}`);
+        }
+
+        function openMarkAttendanceModal() { openModal('attendanceModal'); }
+        function quickMark(rollNo) {
+            document.getElementById('attRollNo').value = rollNo;
+            openModal('attendanceModal');
+        }
+
+        function submitAttendanceForm(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('attRollNo').value.trim();
+            const status = document.getElementById('attStatus').value;
+            let a = state.attendance.find(x => x.rollNo === rollNo);
+            if (!a) {
+                const s = state.students.find(x => x.rollNo === rollNo);
+                a = { rollNo, studentName: s ? s.name : 'Student', totalDays: 0, daysPresent: 0, percentage: 0 };
+                state.attendance.push(a);
+            }
+            a.totalDays += 1;
+            if (status === 'Present') a.daysPresent += 1;
+            a.percentage = (a.daysPresent / a.totalDays) * 100;
+
+            closeModal('attendanceModal');
+            saveState();
+            showToast(`Marked ${status} for Reg #${rollNo}. New Attendance: ${a.percentage.toFixed(1)}%`);
+        }
+
+        function openRecordPaymentModal() { openModal('feeModal'); }
+        function submitFeeForm(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('feeRollNo').value.trim();
+            const amount = parseFloat(document.getElementById('feeAmount').value) || 0;
+            let f = state.fees.find(x => x.rollNo === rollNo);
+            if (!f) {
+                const s = state.students.find(x => x.rollNo === rollNo);
+                f = { rollNo, name: s ? s.name : 'Student', standardFee: 55000, totalPaid: 0, pendingBalance: 55000 };
+                state.fees.push(f);
+            }
+            f.totalPaid += amount;
+            f.pendingBalance = Math.max(0, f.standardFee - f.totalPaid);
+
+            closeModal('feeModal');
+            saveState();
+            showToast(`Recorded payment of ₹${amount.toLocaleString()} for Reg #${rollNo}. Pending: ₹${f.pendingBalance.toLocaleString()}`);
+        }
+
+        function openAddMarksModal() { openModal('marksModal'); }
+        function quickAddMarks(rollNo) {
+            document.getElementById('mksRollNo').value = rollNo;
+            openModal('marksModal');
+        }
+
+        function submitMarksForm(e) {
+            e.preventDefault();
+            const rollNo = document.getElementById('mksRollNo').value.trim();
+            const oop = parseFloat(document.getElementById('mksOOP').value) || 0;
+            const dsa = parseFloat(document.getElementById('mksDSA').value) || 0;
+            const aiml = parseFloat(document.getElementById('mksAIML').value) || 0;
+            const dms = parseFloat(document.getElementById('mksDMS').value) || 0;
+            const dlco = parseFloat(document.getElementById('mksDLCO').value) || 0;
+
+            const total = oop + dsa + aiml + dms + dlco;
+            const pct = total / 5.0;
+
+            let grade = 'F';
+            if (pct >= 90) grade = 'O';
+            else if (pct >= 80) grade = 'A+';
+            else if (pct >= 70) grade = 'A';
+            else if (pct >= 60) grade = 'B+';
+            else if (pct >= 50) grade = 'B';
+            else if (pct >= 40) grade = 'C';
+
+            // Grade points
+            const gp = (m) => (m>=90?10:(m>=80?9:(m>=70?8:(m>=60?7:(m>=50?6:(m>=40?5:0))))));
+            const cgpa = (gp(oop)+gp(dsa)+gp(aiml)+gp(dms)+gp(dlco)) / 5.0;
+
+            const st = state.students.find(x => x.rollNo === rollNo);
+            let ac = state.academics.find(x => x.rollNo === rollNo);
+            if (ac) {
+                ac.subjects = { "OOP_CPP": oop, "DSA": dsa, "AIML_Foundations": aiml, "Discrete_Maths": dms, "Digital_Logic": dlco };
+                ac.totalMarks = total; ac.percentage = pct; ac.grade = grade; ac.cgpa = cgpa;
+            } else {
+                state.academics.push({
+                    rollNo, studentName: st ? st.name : 'Student',
+                    subjects: { "OOP_CPP": oop, "DSA": dsa, "AIML_Foundations": aiml, "Discrete_Maths": dms, "Digital_Logic": dlco },
+                    totalMarks: total, percentage: pct, grade, cgpa
+                });
+            }
+
+            closeModal('marksModal');
+            saveState();
+            showToast(`Semester marks saved for #${rollNo} (SGPA: ${cgpa.toFixed(2)}, Grade: ${grade})`);
+        }
+
+        function viewDossier(rollNo) {
+            const s = state.students.find(x => x.rollNo === rollNo);
+            const a = state.academics.find(x => x.rollNo === rollNo);
+            const att = state.attendance.find(x => x.rollNo === rollNo);
+            const f = state.fees.find(x => x.rollNo === rollNo);
+
+            let clearance = "N/A";
+            if (att && att.totalDays > 0) {
+                if (att.percentage >= 75.0) clearance = "ELIGIBLE (Normal Clearance)";
+                else if (att.percentage >= 65.0) clearance = "CONDONATION REQUIRED (Medical/HOD approval)";
+                else clearance = "DETAINED (Attendance below 65%)";
+            }
+
+            const report = `======================================================================
+         ADITYA UNIVERSITY - COLLEGE OF ENGINEERING & TECHNOLOGY
+               OFFICIAL B.TECH SEMESTER GRADE REPORT (AIML)
+======================================================================
+Registration No : ${rollNo}
+Student Name    : ${s ? s.name : 'Unknown'}
+Program / Branch: B.Tech (Artificial Intelligence & Machine Learning)
+Semester        : Semester 2 (Batch 2025–2029)
+Contact Phone   : ${s ? s.contact : 'N/A'}
+Permanent Addr  : ${s ? s.address : 'N/A'}
+----------------------------------------------------------------------
+COURSE CODE & TITLE                               MARKS   GRADE  POINTS
+CS201: Object-Oriented Programming (C++)         ${a && a.subjects.OOP_CPP ? a.subjects.OOP_CPP : 'N/A'}      ${a ? (a.subjects.OOP_CPP>=90?'O':'A+') : '-'}      ${a ? (a.subjects.OOP_CPP>=90?10:9) : 0}
+CS202: Data Structures & Algorithms (DSA)         ${a && a.subjects.DSA ? a.subjects.DSA : 'N/A'}      ${a ? (a.subjects.DSA>=90?'O':'A+') : '-'}      ${a ? (a.subjects.DSA>=90?10:9) : 0}
+AI201: AI & Machine Learning Foundations          ${a && a.subjects.AIML_Foundations ? a.subjects.AIML_Foundations : 'N/A'}      ${a ? (a.subjects.AIML_Foundations>=90?'O':'A+') : '-'}      ${a ? (a.subjects.AIML_Foundations>=90?10:9) : 0}
+MA201: Discrete Mathematical Structures           ${a && a.subjects.Discrete_Maths ? a.subjects.Discrete_Maths : 'N/A'}      ${a ? (a.subjects.Discrete_Maths>=90?'O':'A') : '-'}      ${a ? (a.subjects.Discrete_Maths>=90?10:8) : 0}
+EC201: Digital Logic & Computer Organization      ${a && a.subjects.Digital_Logic ? a.subjects.Digital_Logic : 'N/A'}      ${a ? (a.subjects.Digital_Logic>=90?'O':'A') : '-'}      ${a ? (a.subjects.Digital_Logic>=90?10:8) : 0}
+----------------------------------------------------------------------
+Total Aggregate Marks : ${a ? a.totalMarks : 0} / 500
+Percentage            : ${a ? a.percentage.toFixed(2) + '%' : '0.00%'}
+Semester SGPA         : ${a ? a.cgpa.toFixed(2) : '0.00'} / 10.00
+Cumulative CGPA       : ${a ? a.cgpa.toFixed(2) : '0.00'}
+Semester Result       : ${a && a.grade !== 'F' ? 'PASSED (FIRST CLASS WITH DISTINCTION)' : 'BACKLOG'}
+----------------------------------------------------------------------
+SEMESTER ATTENDANCE COMPLIANCE:
+Lectures Conducted    : ${att ? att.totalDays : 0}
+Lectures Attended     : ${att ? att.daysPresent : 0}
+Attendance Percentage : ${att ? att.percentage.toFixed(2) + '%' : '0.00%'}
+Semester Exam Status  : ${clearance}
+----------------------------------------------------------------------
+COLLEGE TUITION & LAB FEES:
+Standard Semester Fee : ₹${f ? f.standardFee.toLocaleString() : '55,000'}
+Total Fee Remitted    : ₹${f ? f.totalPaid.toLocaleString() : '0'}
+Outstanding Balance   : ₹${f ? f.pendingBalance.toLocaleString() : '55,000'}
+Financial Clearance   : ${f && f.pendingBalance <= 0 ? 'CLEARED [NO DUES]' : 'FEES PENDING'}
+======================================================================
+Controller of Examinations                       Head of Department (AIML)
+Aditya University                                College of Engineering`;
+
+            document.getElementById('dossierTitle').innerText = `B.Tech Semester Marksheet (Reg #${rollNo})`;
+            document.getElementById('dossierContent').innerText = report;
+            openModal('dossierModal');
+        }
+
+        function viewFeeReceipt(rollNo) {
+            const s = state.students.find(x => x.rollNo === rollNo);
+            const f = state.fees.find(x => x.rollNo === rollNo);
+
+            const receipt = `======================================================================
+         ADITYA UNIVERSITY - COLLEGE OF ENGINEERING & TECHNOLOGY
+                 OFFICIAL SEMESTER TUITION FEE RECEIPT
+======================================================================
+Receipt No   : ADY-AIML-REC-${rollNo}-2026
+Transaction  : BANK-TFR / CAMPUS PORTAL
+Date Issued  : 18-09-2026
+Reg Number   : ${rollNo}
+Student Name : ${s ? s.name : (f ? f.name : 'Student')}
+Department   : Artificial Intelligence & Machine Learning (AIML)
+Degree       : B.Tech (4-Year Undergraduate Program)
+Semester     : Semester 2 (Academic Year 2025–2026)
+----------------------------------------------------------------------
+FEE BREAKDOWN                       STANDARD (₹)      PAID (₹)     DUE (₹)
+Tuition Fee                         40,000            ${f ? Math.min(f.totalPaid, 40000) : 0}        ${f ? Math.max(0, 40000 - f.totalPaid) : 40000}
+Laboratory & AI Computing Fee       10,000            ${f ? Math.max(0, Math.min(f.totalPaid - 40000, 10000)) : 0}        ${f ? (f.totalPaid >= 50000 ? 0 : 10000) : 10000}
+University Dev & Library Fee         5,000            ${f ? Math.max(0, f.totalPaid - 50000) : 0}        ${f ? (f.totalPaid >= 55000 ? 0 : 5000) : 5000}
+----------------------------------------------------------------------
+Total Semester Fee                  55,000            ${f ? f.totalPaid : 0}        ${f ? f.pendingBalance : 55000}
+----------------------------------------------------------------------
+Status       : ${f && f.pendingBalance <= 0 ? 'PAID IN FULL [NO DUES CERTIFICATE ISSUED]' : 'PARTIAL REMITTANCE'}
+Authorized   : Finance & Accounts Officer, Aditya University`;
+
+            document.getElementById('dossierTitle').innerText = `College Fee Receipt (Reg #${rollNo})`;
+            document.getElementById('dossierContent').innerText = receipt;
+            openModal('dossierModal');
+        }
+
+        function downloadCsvReport() {
+            let csv = "Rank,RegNo,StudentName,Percentage,SGPA,Attendance,Grade,ClearanceStatus\n";
+            const ranking = state.students
+                .map(s => {
+                    const ac = state.academics.find(a => a.rollNo === s.rollNo);
+                    const att = state.attendance.find(a => a.rollNo === s.rollNo);
+                    let clearance = "Eligible";
+                    if (att) {
+                        if (att.percentage < 65.0) clearance = "Detained (<65%)";
+                        else if (att.percentage < 75.0) clearance = "Condonation (65-75%)";
+                    }
+                    return {
+                        rollNo: s.rollNo, name: s.name,
+                        percentage: ac ? ac.percentage : 0,
+                        sgpa: ac ? ac.cgpa : 0,
+                        grade: ac ? ac.grade : 'N/A',
+                        attendance: att ? att.percentage : 0,
+                        clearance
+                    };
+                })
+                .sort((a, b) => b.percentage - a.percentage);
+
+            ranking.forEach((r, idx) => {
+                csv += `${idx + 1},${r.rollNo},"${r.name}",${r.percentage.toFixed(2)}%,${r.sgpa.toFixed(2)},${r.attendance.toFixed(2)}%,${r.grade},${r.clearance}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'btech_aiml_sem2_report.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("Exported btech_aiml_sem2_report.csv successfully!");
+        }
+
+        function promptLogin() {
+            const u = prompt('Enter Faculty Username (admin / faculty / aiml_coord):', 'admin');
+            const p = prompt('Enter Password:', 'admin123');
+            if (u === 'admin' && p === 'admin123') {
+                state.currentUser = 'admin';
+                state.accessLevel = 'HOD / Dean (AIML)';
+                document.getElementById('activeUserLabel').innerText = 'HOD / Dean (Full Control)';
+                showToast("Logged in as Head of Department (AIML)");
+            } else if (u === 'faculty' && p === 'faculty123') {
+                state.currentUser = 'faculty';
+                state.accessLevel = 'Assistant Professor';
+                document.getElementById('activeUserLabel').innerText = 'faculty (Assistant Professor)';
+                showToast("Logged in as Assistant Professor");
+            } else if (u === 'aiml_coord' && p === 'aiml123') {
+                state.currentUser = 'aiml_coord';
+                state.accessLevel = 'Course Coordinator';
+                document.getElementById('activeUserLabel').innerText = 'aiml_coord (Course Coordinator)';
+                showToast("Logged in as Course Coordinator");
+            } else {
+                showToast("Invalid credentials!", true);
+            }
+        }
+
+        function switchUserRole(username, role) {
+            state.currentUser = username;
+            state.accessLevel = role;
+            document.getElementById('activeUserLabel').innerText = `${username} (${role})`;
+            showToast(`Switched user role to ${role}`);
+        }
+
+        function escapeHtml(s) {
+            if (!s) return '';
+            return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        window.addEventListener('DOMContentLoaded', renderAll);
+    </script>
+</body>
+</html>
